@@ -68,5 +68,5 @@ will force a reuse of the authentication settings when a download request
 results in a redirect to a different domain (this is specifically needed for
 the CDSE interface).
 
-A reference to the credentials file can be set with the `CSCIP_QUERY_CONFIG`
+A reference to the credentials file can be set with the `CSCIP_CLIENT_CONFIG`
 environment variable or passed via the command line via the `-c` option.

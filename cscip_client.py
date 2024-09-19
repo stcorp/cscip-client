@@ -27,9 +27,9 @@ class CSCIPSession:
     def __init__(self, id, config_path=None, timeout=60):
         self.timeout = timeout
         if config_path is None:
-            config_path = os.getenv("CSCIP_QUERY_CONFIG")
+            config_path = os.getenv("CSCIP_CLIENT_CONFIG")
             if config_path is None:
-                raise Exception("CSCIP_QUERY_CONFIG environment variable is not set")
+                raise Exception("CSCIP_CLIENT_CONFIG environment variable is not set")
         config = json.loads(open(config_path).read())
         for service_url in config:
             if 'id' in config[service_url]:
