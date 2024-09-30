@@ -4,7 +4,7 @@ This package provides a `cscip-client` command line tool to interface with
 Copernicus Space Component Interface delivery Points, which are web api
 services based on a limited implementation of the OData standard.
 
-Although formally not an CSC-IP interface, this client can also be used for the
+Although formally not a CSC-IP interface, this client can also be used for the
 [CDSE OData API](https://documentation.dataspace.copernicus.eu/APIs/OData.html).
 
 Some example invocations of `cscip-client`:
@@ -39,14 +39,12 @@ credentials file format. For example:
         "reuse_auth_on_redirect": true
       },
       "https://public-service.example.com/odata/v1/": {
-        "id": "example1",
-        "username": "XXXXXXXX",
-        "password": "XXXXXXXX",
+        "id": "example1"
       }
       "https://basic-auth-service.example.com/odata/v1/": {
         "id": "example2",
         "username": "XXXXXXXX",
-        "password": "XXXXXXXX",
+        "password": "XXXXXXXX"
       }
       "https://oauth2-service.example.com/odata/v1/": {
         "id": "example3",
