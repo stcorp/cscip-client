@@ -40,12 +40,12 @@ credentials file format. For example:
       },
       "https://public-service.example.com/odata/v1/": {
         "id": "example1"
-      }
+      },
       "https://basic-auth-service.example.com/odata/v1/": {
         "id": "example2",
         "username": "XXXXXXXX",
         "password": "XXXXXXXX"
-      }
+      },
       "https://oauth2-service.example.com/odata/v1/": {
         "id": "example3",
         "auth_type": "oauth2",
