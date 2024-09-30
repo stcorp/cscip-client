@@ -10,6 +10,7 @@ import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient
 from oauthlib.oauth2.rfc6749 import tokens
+from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 
 ODATA_FILTER_EXAMPLES = """
 example ODATA filter queries:
@@ -49,11 +50,22 @@ class CSCIPSession:
                 self.session = OAuth2Session(client=LegacyApplicationClient(client_id=self.credentials['client_id']))
                 self.session.fetch_token(token_url=self.credentials['token_url'], username=self.credentials['username'],
                                          password=self.credentials['password'], client_id=self.credentials['client_id'],
-                                         client_secret=self.credentials['client_secret'], timeout=60)
+                                         client_secret=self.credentials['client_secret'], timeout=self.timeout)
             else:
                 raise Exception(f"Unsupported authentication type {self.credentials[auth_type]}",)
         elif 'username' in self.credentials:
             self.auth = requests.auth.HTTPBasicAuth(self.credentials['username'], self.credentials['password'])
+
+    def get(self, url, allow_redirects=True, stream=False):
+        try:
+            return self.session.get(url, auth=self.auth, timeout=self.timeout, allow_redirects=allow_redirects,
+                                    stream=stream)
+        except TokenExpiredError:
+            self.session.fetch_token(token_url=self.credentials['token_url'], username=self.credentials['username'],
+                                     password=self.credentials['password'], client_id=self.credentials['client_id'],
+                                     client_secret=self.credentials['client_secret'], timeout=self.timeout)
+            return self.session.get(url, auth=self.auth, timeout=self.timeout, allow_redirects=allow_redirects,
+                                    stream=stream)
 
     def query(self, uuid=None, name_part=None, order_by="", filter=None, limit=100, attributes=False):
         url = self.service_url + "Products"
@@ -81,7 +93,7 @@ class CSCIPSession:
             url += "?" + "&".join(arguments)
 
         try:
-            resp = self.session.get(url, auth=self.auth, timeout=self.timeout, allow_redirects=False)
+            resp = self.get(url, allow_redirects=False)
         except requests.exceptions.RequestException as e:
             logger.debug("====REQUEST=====")
             logger.debug(f"url: {e.request.url}")
@@ -118,14 +130,13 @@ class CSCIPSession:
         try:
             url = self.service_url + "Products(" + entry['Id'] + ")/$value"
             if 'reuse_auth_on_redirect' in self.credentials and self.credentials['reuse_auth_on_redirect']:
-                resp = self.session.get(url, auth=self.auth, timeout=self.timeout, allow_redirects=False, stream=True)
+                resp = self.get(url, allow_redirects=False, stream=True)
                 if resp.status_code == 301:
                     redirect_url = resp.headers['Location']
                     logger.debug(f"explicitly redirecting: {redirect_url}")
-                    resp = self.session.get(redirect_url, auth=self.auth, timeout=self.timeout, allow_redirects=False,
-                                            stream=True)
+                    resp = self.get(redirect_url, allow_redirects=False, stream=True)
             else:
-                resp = self.session.get(url, auth=self.auth, timeout=self.timeout, stream=True)
+                resp = self.get(url, stream=True)
             resp.raise_for_status()
             local_file = os.path.join(target_path, entry['Name'])
             if 'content-disposition' in [key.lower() for key in resp.headers.keys()]:
