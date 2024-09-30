@@ -44,6 +44,8 @@ class CSCIPSession:
         self.auth = None
         if 'auth_type' in self.credentials:
             if self.credentials['auth_type'] == "oauth2":
+                if self.credentials['grant_type'] != "ResourceOwnerPasswordCredentialsGrant":
+                    raise Exception(f"Unsupported oauth2 grant type {self.credentials['grant_type']}",)
                 if self.service_url.startswith("http://"):
                     # if the credentials file explicitly mentions the HTTP protocol then allow insecure transport
                     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -52,7 +54,7 @@ class CSCIPSession:
                                          password=self.credentials['password'], client_id=self.credentials['client_id'],
                                          client_secret=self.credentials['client_secret'], timeout=self.timeout)
             else:
-                raise Exception(f"Unsupported authentication type {self.credentials[auth_type]}",)
+                raise Exception(f"Unsupported authentication type {self.credentials['auth_type']}",)
         elif 'username' in self.credentials:
             self.auth = requests.auth.HTTPBasicAuth(self.credentials['username'], self.credentials['password'])
 
