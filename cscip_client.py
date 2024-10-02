@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import uuid
+import sys
 
 import requests
 from requests_oauthlib import OAuth2Session
@@ -193,7 +194,7 @@ def main():
     if "verbose" in args:
         if args.verbose:
             loglevel = logging.DEBUG
-    logging.basicConfig(level=loglevel, format="%(message)s")
+    logging.basicConfig(level=loglevel, format="%(message)s", handlers=[logging.StreamHandler(sys.stdout)])
 
     if args.subcommand == "query":
         odata_session = CSCIPSession(args.id, args.credentials)
