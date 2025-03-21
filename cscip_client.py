@@ -45,6 +45,9 @@ class CSCIPSession:
         self.auth = None
         if 'auth_type' in self.credentials:
             if self.credentials['auth_type'] == "oauth2":
+                auth_args = {}
+                if 'auth_args' in self.credentials:
+                    auth_args = self.credentials['auth_args']
                 if self.credentials['grant_type'] != "ResourceOwnerPasswordCredentialsGrant":
                     raise Exception(f"Unsupported oauth2 grant type {self.credentials['grant_type']}",)
                 if self.service_url.startswith("http://"):
@@ -53,7 +56,7 @@ class CSCIPSession:
                 self.session = OAuth2Session(client=LegacyApplicationClient(client_id=self.credentials['client_id']))
                 self.session.fetch_token(token_url=self.credentials['token_url'], username=self.credentials['username'],
                                          password=self.credentials['password'], client_id=self.credentials['client_id'],
-                                         client_secret=self.credentials['client_secret'], timeout=self.timeout)
+                                         client_secret=self.credentials['client_secret'], timeout=self.timeout, **auth_args)
             else:
                 raise Exception(f"Unsupported authentication type {self.credentials['auth_type']}",)
         elif 'username' in self.credentials:
@@ -64,9 +67,12 @@ class CSCIPSession:
             return self.session.get(url, auth=self.auth, timeout=self.timeout, allow_redirects=allow_redirects,
                                     stream=stream)
         except TokenExpiredError:
+            auth_args = {}
+            if 'auth_args' in self.credentials:
+                auth_args = self.credentials['auth_args']
             self.session.fetch_token(token_url=self.credentials['token_url'], username=self.credentials['username'],
                                      password=self.credentials['password'], client_id=self.credentials['client_id'],
-                                     client_secret=self.credentials['client_secret'], timeout=self.timeout)
+                                     client_secret=self.credentials['client_secret'], timeout=self.timeout, **auth_args)
             return self.session.get(url, auth=self.auth, timeout=self.timeout, allow_redirects=allow_redirects,
                                     stream=stream)
 

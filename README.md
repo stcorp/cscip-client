@@ -54,7 +54,8 @@ credentials file format. For example:
         "password": "XXXXXXXX",
         "client_id": "XXXXXXXX",
         "client_secret": "XXXXXXXX",
-        "token_url": "https://oauth2-service.example.com/getAuthToken"
+        "token_url": "https://oauth2-service.example.com/getAuthToken",
+        "auth_args": {"scope": "openid"}
       }
     }
 
