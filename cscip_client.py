@@ -146,6 +146,13 @@ class CSCIPSession:
                     resp = self.get(redirect_url, allow_redirects=False, stream=True)
             else:
                 resp = self.get(url, stream=True)
+            logger.debug("====REQUEST=====")
+            logger.debug(f"url: {resp.request.url}")
+            logger.debug(f"headers: {resp.request.headers}")
+            logger.debug("====RESPONSE====")
+            logger.debug(f"url: {resp.url}")
+            logger.debug(f"headers: {resp.headers}")
+            logger.debug("================")
             resp.raise_for_status()
             local_file = os.path.join(target_path, entry['Name'])
             if 'content-disposition' in [key.lower() for key in resp.headers.keys()]:
