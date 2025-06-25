@@ -10,7 +10,6 @@ import sys
 import requests
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient
-from oauthlib.oauth2.rfc6749 import tokens
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 
 ODATA_FILTER_EXAMPLES = """
